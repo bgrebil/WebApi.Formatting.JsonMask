@@ -121,7 +121,8 @@ packages/*
 !packages/repositories.config
 # Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
 !packages/*/build/
-
+# Nuget executable
+nuget.exe
 
 # Windows Azure Build Output
 csx/
