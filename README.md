@@ -18,7 +18,7 @@ The `FormatterConfig` class looks this:
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
 
-            // Insert the JSONP formatter in front of the standard JSON formatter.
+            // Insert the JsonMask formatter in front of the standard JSON formatter.
             var jsonMaskFormatter = new JsonMaskMediaTypeFormatter(formatters.JsonFormatter);
             formatters.Insert(0, jsonMaskFormatter);
         }
