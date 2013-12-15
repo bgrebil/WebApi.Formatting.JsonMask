@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+   <metadata>
+      <id>$id$</id>
+      <version>$version$</version>
+      <title>$title$</title>
+      <authors>Bryce Grebil</authors>
+      <owners>Bryce Grebil</owners>
+      <licenseUrl>https://raw.github.com/bgrebil/WebApi.Formatting.JsonMask/master/LICENSE.txt</licenseUrl>
+      <projectUrl>https://github.com/bgrebil/WebApi.Formatting.JsonMask</projectUrl>
+      <requireLicenseAcceptance>false</requireLicenseAcceptance>
+      <description>$description$</description>
+      <copyright>Copyright 2013</copyright>
+      <tags>webapi json</tags>
+   </metadata>
+   <files>
+      <file src="..\Package-Examples\FormatterConfig-Example.cs.pp" target="content\App_Start" />
+   </files>
+ </package>

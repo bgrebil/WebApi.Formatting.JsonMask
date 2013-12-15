@@ -166,6 +166,9 @@ App_Data/*.ldf
 # Microsoft Fakes
 FakesAssemblies/
 
+# WebEssential Built Files
+README.html
+
 # =========================
 # Windows detritus
 # =========================
