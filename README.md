@@ -32,6 +32,12 @@ you can specify it when creating the MediaTypeFormatter
 
     var jsonMaskFormatter = new JsonMaskMediatypeFormatter(formatters.JsonFormatter, "fields");
 
+## Install
+
+You can install through Nuget
+    
+    Install-Package WebApi.Formatting.JsonMask    
+    
 ## Syntax
 
 The syntax is loosely based on XPath:
