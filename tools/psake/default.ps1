@@ -38,6 +38,10 @@ Task RunUnitTests -depends Build {
 
 Task NuGetBuild -depends Build {
    & $nuget_exe pack "$base_dir/src/WebApi.Formatting.JsonMask/WebApi.Formatting.JsonMask.csproj" -Build -OutputDirectory $build_artifacts_dir -Verbosity detailed -Properties Configuration=Release
+   
+   Create-Sources-Nuspec
+   
+   & $nuget_exe pack "$base_dir/src/WebApi.Formatting.JsonMask/WebApi.Formatting.JsonMask.Sources.nuspec" -OutputDirectory $build_artifacts_dir -Verbosity detailed
 }
 
 # Utility Functions
@@ -55,3 +59,62 @@ function Exit-Build
  
    Exit
 }
+
+function Create-Sources-Nuspec
+{
+   function Create-DependElement([xml]$xml, [string]$id, [string]$version) {
+      $xmlNS = $nuspecXml.DocumentElement.NamespaceURI
+
+      $node = $xml.CreateElement("dependency", $xmlNS)
+      $node.SetAttribute("id", $id)
+      $node.SetAttribute("version", $version)
+      
+      return $node
+   }
+
+   function Create-FileElement([xml]$xml, [string]$src, [string]$target) {
+      $xmlNS = $nuspecXml.DocumentElement.NamespaceURI
+
+      $node = $xml.CreateElement("file", $xmlNS)
+      $node.SetAttribute("src", $src)
+      $node.SetAttribute("target", $target)
+      
+      return $node
+   }
+   
+   $nupkg = @(get-childitem $build_artifacts_dir\*.nupkg)[0]
+   
+   [String]$nuspec = "WebApi.Formatting.JsonMask.nuspec"
+   [String]$dest = $env:TEMP
+   [String]$extractedFile = "$dest/$nuspec"
+   [String]$sourcesNuspec = "$base_dir/src/WebApi.Formatting.JsonMask/WebApi.Formatting.JsonMask.Sources.nuspec"
+   
+   [Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") > $null
+   $zipStream = [System.IO.Compression.ZipFile]::OpenRead($nupkg.FullName)
+   $fileStream = new-object System.IO.FileStream($extractedFile), 'OpenOrCreate', 'Write', 'Read'
+   
+   foreach ($zippedFile in $zipStream.Entries) {
+      if ($zippedFile.Name -eq $nuspec) {
+         $file = $zippedFile.Open()
+         $file.CopyTo($fileStream)
+         $file.Close()
+      }
+   }
+   $fileStream.Close()
+   $zipStream.Dispose()
+   
+   [xml]$nuspecXml = Get-Content $extractedFile
+   $xmlNS = $nuspecXml.DocumentElement.NamespaceURI
+   
+   $nuspecXml.package.metadata.id = $nuspecXml.package.metadata.id + ".Sources"
+   
+   $nuspecXml.package.metadata.dependencies.AppendChild((Create-DependElement $nuspecXml "TaskHelpers.Sources" "0.3")) > $null
+   
+   $filesNode = $nuspecXml.CreateElement("files", $xmlNS)
+   $filesNode.AppendChild((Create-FileElement $nuspecXml "*.cs" "content\App_Packages\WebApi.Formatters.JsonMask")) > $null
+   $filesNode.AppendChild((Create-FileElement $nuspecXml "..\Package-Examples\FormatterConfig-Example.cs.pp" "content\App_Start")) > $null
+   $nuspecXml.package.AppendChild($filesNode) > $null
+   
+   $nuspecXml.Save($sourcesNuspec)
+}
+
